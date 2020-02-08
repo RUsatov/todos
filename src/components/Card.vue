@@ -31,6 +31,7 @@
         />
       </li>
     </ul>
+    <router-link v-if="card.todos.length > 5" :to="`/edit${card.id}`" class="card__link link">Показать больше</router-link>
 
     <modal
       v-show="showDeleteModal"
@@ -107,17 +108,17 @@ export default {
 	overflow-y: auto;
 
 	background-color: $card;
-	border-radius: 4px;
+  border-radius: 4px;
+
+  overflow: hidden;
 
   @extend %px-2;
-
   @extend %py-3;
 
 	@media screen and (min-width: 767.98px) {
 		min-width: auto;
 	}
 	&:hover {
-		@extend %pt-5;
 		.card__header {
 			opacity: 1;
 		}
@@ -128,8 +129,11 @@ export default {
 		top: 14px;
 		right: 14px;
 
-		opacity: 0;
+    opacity: 0;
+    background-color: $card;
 
+    @extend %pl-2;
+    @extend %pt-1;
     @extend %mb-2;
 	}
 	&__title {
@@ -137,6 +141,12 @@ export default {
 	}
 	&__list-item {
 		@extend %mb-1;
-	}
+  }
+  &__link {
+    position: absolute;
+    bottom: 14px;
+    left: 14px;
+    background-color: $card;
+  }
 }
 </style>

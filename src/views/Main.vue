@@ -1,15 +1,19 @@
 <template>
   <section class="todo-main">
     <!-- Кнопка добавления списка дел -->
-    <button
+    <router-link
+      tag="button"
+      to="/create"
       class="create-todo"
       @click="$router.push('/create')"
       :disabled="todos.length >= 8"
-      :title="todos.length >= 8 ? 'Создано максимальное количество заметок' : ''"
+      :title="
+        todos.length >= 8 ? 'Создано максимальное количество заметок' : ''
+      "
     >
       <span class="create-todo__plus">+</span>
       <span class="create-todo__text">Добавить список дел</span>
-    </button>
+    </router-link>
 
     <!-- Отрисовка карточек -->
     <card
@@ -18,6 +22,13 @@
       :card="card"
       @delete="deleteTodo"
     />
+
+    <h2 v-if="isEmptyTodos" class="info-empty">
+      Список дел пуст.
+      <router-link to="/create" class="info-empty__link link"
+        >Создайте первую заметку.</router-link
+      >
+    </h2>
   </section>
 </template>
 
@@ -29,11 +40,15 @@ export default {
     Card,
   },
   async created() {
-    this.todos = await this.$store.dispatch('getTodoList')
+    await this.$store.dispatch('getTodoList').then(res => {
+      res.length ? (this.isEmptyTodos = false) : (this.isEmptyTodos = true)
+      this.todos = res
+    })
   },
   data() {
     return {
       todos: [],
+      isEmptyTodos: false,
     }
   },
   methods: {
@@ -46,87 +61,108 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.todo-main { display: grid;
-	flex-wrap: wrap;
-	justify-content: flex-start; // на случай если grid не поддерживается   grid-gap: 14px;  grid-template-columns: 1fr; 
-	@media screen and (min-width: 575.98px) {
-		grid-template-columns: repeat(2, 1fr);
-	}
-	@media screen and (min-width: 767.98px) {
-		grid-template-columns: repeat(3, 1fr);
-	}
-	@media screen and (min-width: 1199.98px) {
-		grid-gap: 24px;
-		grid-template-columns: repeat(4, 1fr);
-	}
+.todo-main {
+  display: grid;
+  flex-wrap: wrap;
+  justify-content: flex-start; // на случай если grid не поддерживается   grid-gap: 14px;  grid-template-columns: 1fr;
+  @media screen and (min-width: 575.98px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media screen and (min-width: 767.98px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  @media screen and (min-width: 1199.98px) {
+    grid-gap: 24px;
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 .create-todo {
-	position: fixed;
-	top: 32px;
-	right: 32px;
-	z-index: 5;
+  position: fixed;
+  top: 32px;
+  right: 32px;
+  z-index: 5;
 
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	width: 42px;
-	min-height: 42px;
-	overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 42px;
+  min-height: 42px;
+  overflow: hidden;
 
-	font-size: 30px;
-	color: $white;
+  font-size: 30px;
+  color: $white;
 
-	background-color: $primary;
-	border-radius: 100px;
-	cursor: pointer;
+  background-color: $primary;
+  border-radius: 100px;
+  cursor: pointer;
 
-	transition: all 0.4s;
+  transition: all 0.4s;
 
-	&__plus {
-		position: absolute;
+  &__plus {
+    position: absolute;
   }
 
-	&__text {
-		font-size: 16px;
-		white-space: nowrap;
+  &__text {
+    font-size: 16px;
+    white-space: nowrap;
 
-		opacity: 0;
+    opacity: 0;
   }
 
-	&:hover {
-		width: 230px;
-		.create-todo__plus {
-			position: absolute;
+  &:hover {
+    width: 230px;
+    .create-todo__plus {
+      position: absolute;
 
-			opacity: 0;
-		}
-		.create-todo__text {
-			position: relative;
+      opacity: 0;
+    }
+    .create-todo__text {
+      position: relative;
 
-			opacity: 1;
-		}
+      opacity: 1;
+    }
   }
 
-	&:active {
-		background-color: darken($primary, 8%);
+  &:active {
+    background-color: darken($primary, 8%);
   }
 
-	&:disabled {
-		cursor: default;
-		opacity: 0.4;
-		&:hover {
-			width: 42px;
-			.create-todo__plus {
-				opacity: 1;
-			}
-			.create-todo__text {
-				opacity: 0;
-			}
-		}
-		&:active {
-			background: $primary;
-		}
-	}
+  &:disabled {
+    cursor: default;
+    opacity: 0.4;
+    &:hover {
+      width: 42px;
+      .create-todo__plus {
+        opacity: 1;
+      }
+      .create-todo__text {
+        opacity: 0;
+      }
+    }
+    &:active {
+      background: $primary;
+    }
+  }
+}
+
+.info-empty {
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: $white;
+  text-align: center;
+
+  @media screen and (min-width: 575.98px) {
+    font-size: 18px;
+  }
+  @media screen and (min-width: 767.98px) {
+    font-size: 20px;
+  }
+  @media screen and (min-width: 1199.98px) {
+    font-size: 26px;
+  }
 }
 </style>

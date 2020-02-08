@@ -53,6 +53,7 @@
       <input
         type="text"
         class="todo-item__input input"
+        @keydown.enter="addItem(idx)"
         v-model.trim.lazy="item.text"
         placeholder="Опишите задачу"
       />
@@ -227,12 +228,19 @@ export default {
   methods: {
     /**
      * Добавляет одно поле в список дел
+     * @param {number} idx - индекс инпута, на котором нажали Enter
      */
-    addItem() {
+    addItem(idx) {
       this.todoList.todos.push({
         text: '',
         done: false,
       })
+
+      if (idx !== undefined) {
+        const inputs = document.querySelectorAll('.todo-item__input')
+        inputs[idx].blur()
+      }
+
       this.$nextTick(() => {
         const inputs = document.querySelectorAll('.todo-item__input')
         inputs[inputs.length - 1].focus()
