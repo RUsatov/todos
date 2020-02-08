@@ -193,6 +193,12 @@ export default {
       },
     }
   },
+  mounted () {
+    this.checkLocalStorage()
+  },
+  beforeDestroy () {
+    localStorage.removeItem('versions')
+  },
   watch: {
     /**
      * Отслеживает объект todoList с полным погружением.
@@ -203,6 +209,7 @@ export default {
         this.versions[++this.versionCount] = JSON.parse(
           JSON.stringify(this.todoList)
         ) // {...this.todoList} не использовался потому что копируются только внешние поля
+        localStorage.setItem('versions', JSON.stringify(this.versions))
       },
       deep: true,
     },
@@ -226,6 +233,20 @@ export default {
     },
   },
   methods: {
+    /**
+     * Проверяет локальное хранилище браузера на наличие версий измененной заметки.
+     * Если она есть, то возвращает последнюю версию и обновляет нужные поля
+     */
+    checkLocalStorage() {
+      const versions = localStorage.getItem('versions', JSON.stringify(this.versions))
+      if (versions) {
+        const versionsParse = JSON.parse(versions)
+        const keys = Object.keys(versionsParse);
+        this.versions = versionsParse
+        this.versionCount = keys[keys.length - 2]
+        this.todoList = versionsParse[keys[keys.length - 1]]
+      }
+    },
     /**
      * Добавляет одно поле в список дел
      * @param {number} idx - индекс инпута, на котором нажали Enter
