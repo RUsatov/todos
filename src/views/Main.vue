@@ -64,7 +64,7 @@ export default {
 .todo-main {
   display: grid;
   flex-wrap: wrap;
-  justify-content: flex-start; // на случай если grid не поддерживается   grid-gap: 14px;  grid-template-columns: 1fr;
+  grid-gap: 14px;
   @media screen and (min-width: 575.98px) {
     grid-template-columns: repeat(2, 1fr);
   }
